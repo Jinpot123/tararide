@@ -29,6 +29,10 @@ const DriverForm = () => {
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [mobileError, setMobileError] = useState("");
 
   const handleImageChange = (e, type) => {
     const file = e.target.files[0];
@@ -55,27 +59,37 @@ const DriverForm = () => {
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>/?]).{8,}$/;
 
+    let hasError = false;
+
     if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address.");
-      return;
+      setEmailError("Invalid email format.");
+      hasError = true;
+    } else {
+      setEmailError("");
     }
 
     if (!mobileRegex.test(mobileNumber)) {
-      alert("Mobile number must be exactly 11 digits.");
-      return;
+      setMobileError("Mobile number must be exactly 11 digits.");
+      hasError = true;
+    } else {
+      setMobileError("");
     }
 
     if (!passwordRegex.test(password)) {
-      alert(
-        "Password must be at least 8 characters long and include uppercase letters, numbers, and special characters."
-      );
-      return;
+      setPasswordError("Min 8 chars, 1 uppercase, 1 number, 1 special char.");
+      hasError = true;
+    } else {
+      setPasswordError("");
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
-      return;
+      setConfirmPasswordError("Passwords do not match.");
+      hasError = true;
+    } else {
+      setConfirmPasswordError("");
     }
+
+    if (hasError) return;
 
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -108,7 +122,6 @@ const DriverForm = () => {
 
       const now = new Date();
 
-      // CONTACT INFORMATION
       await setDoc(doc(db, "contact_information", userId), {
         uuid: userId,
         contact_name: `${firstName} ${middleName} ${lastName}`.trim(),
@@ -121,7 +134,6 @@ const DriverForm = () => {
         created_on: now,
       });
 
-      // ACCOUNT INFORMATION
       await setDoc(doc(db, "account_information", userId), {
         uuid: userId,
         business_role: "driver",
@@ -132,7 +144,6 @@ const DriverForm = () => {
         ride_id: "",
       });
 
-      // PERSONAL INFORMATION
       await setDoc(doc(db, "personal_information", userId), {
         user_id: userId,
         first_name: firstName,
@@ -224,11 +235,25 @@ const DriverForm = () => {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setEmail(value);
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              setEmailError(
+                emailRegex.test(value) ? "" : "Invalid email format."
+              );
+            }}
             placeholder="Enter your email"
-            className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`mt-2 block w-full px-4 py-2 border ${
+              emailError ? "border-red-500" : "border-gray-300"
+            } rounded-md focus:outline-none focus:ring-2 ${
+              emailError ? "focus:ring-red-500" : "focus:ring-blue-500"
+            }`}
             required
           />
+          {emailError && (
+            <p className="text-sm text-red-500 mt-1">{emailError}</p>
+          )}
         </div>
 
         <div>
@@ -243,9 +268,23 @@ const DriverForm = () => {
               id="password"
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setPassword(value);
+                const passwordRegex =
+                  /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>/?]).{8,}$/;
+                setPasswordError(
+                  passwordRegex.test(value)
+                    ? ""
+                    : "Min 8 chars, 1 uppercase, 1 number, 1 special char."
+                );
+              }}
               placeholder="Create a password"
-              className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`mt-2 block w-full px-4 py-2 border ${
+                passwordError ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 ${
+                passwordError ? "focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
               required
             />
             <button
@@ -256,7 +295,11 @@ const DriverForm = () => {
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
+          {passwordError && (
+            <p className="text-sm text-red-500 mt-1">{passwordError}</p>
+          )}
         </div>
+
         <div>
           <label
             htmlFor="confirmPassword"
@@ -268,11 +311,26 @@ const DriverForm = () => {
             id="confirmPassword"
             type={showPassword ? "text" : "password"}
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setConfirmPassword(value);
+              setConfirmPasswordError(
+                value !== password ? "Passwords do not match." : ""
+              );
+            }}
             placeholder="Re-enter your password"
-            className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`mt-2 block w-full px-4 py-2 border ${
+              confirmPasswordError ? "border-red-500" : "border-gray-300"
+            } rounded-md focus:outline-none focus:ring-2 ${
+              confirmPasswordError
+                ? "focus:ring-red-500"
+                : "focus:ring-blue-500"
+            }`}
             required
           />
+          {confirmPasswordError && (
+            <p className="text-sm text-red-500 mt-1">{confirmPasswordError}</p>
+          )}
         </div>
 
         <div>
@@ -288,15 +346,25 @@ const DriverForm = () => {
             inputMode="numeric"
             value={mobileNumber}
             onChange={(e) => {
-              const cleaned = e.target.value.replace(/\D/g, ""); // remove non-digits
-              if (cleaned.length <= 11) {
-                setMobileNumber(cleaned);
+              const value = e.target.value.replace(/\D/g, "");
+              if (value.length <= 11) {
+                setMobileNumber(value);
+                setMobileError(
+                  value.length === 11 ? "" : "Mobile number must be 11 digits."
+                );
               }
             }}
             placeholder="Enter your mobile number"
-            className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md"
+            className={`mt-2 block w-full px-4 py-2 border ${
+              mobileError ? "border-red-500" : "border-gray-300"
+            } rounded-md focus:outline-none focus:ring-2 ${
+              mobileError ? "focus:ring-red-500" : "focus:ring-blue-500"
+            }`}
             required
           />
+          {mobileError && (
+            <p className="text-sm text-red-500 mt-1">{mobileError}</p>
+          )}
         </div>
 
         <div>
