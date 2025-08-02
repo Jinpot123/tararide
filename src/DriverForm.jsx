@@ -97,6 +97,7 @@ const DriverForm = () => {
         email,
         password
       );
+      
       const user = userCredential.user;
       const userId = user.uid;
 

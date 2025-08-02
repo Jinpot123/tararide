@@ -31,6 +31,16 @@ const formatDate = (timestamp) => {
   });
 };
 
+// Mask name function: e.g., "Juan Dela Cruz" => "J*** D*** C***"
+const maskName = (fullName) => {
+  const nameParts = fullName.trim().split(" ");
+  const maskedParts = nameParts.map((part) => {
+    if (part.length === 0) return "";
+    return part.charAt(0) + "*".repeat(part.length - 1);
+  });
+  return maskedParts.join(" ");
+};
+
 const ReviewCarousel = () => {
   const [reviews, setReviews] = useState([]);
   const [current, setCurrent] = useState(0);
@@ -63,7 +73,9 @@ const ReviewCarousel = () => {
             const contactDoc = await getDoc(doc(db, "contact_information", accountData.uuid));
             if (contactDoc.exists()) {
               const contactData = contactDoc.data();
-              passengerName = contactData.contact_name || "Anonymous";
+              if (contactData.contact_name) {
+                passengerName = maskName(contactData.contact_name);
+              }
             }
           }
 
