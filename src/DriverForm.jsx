@@ -13,7 +13,7 @@ const DriverForm = () => {
   const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
-
+  const [dobError, setDobError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -61,6 +61,23 @@ const DriverForm = () => {
 
     let hasError = false;
 
+    const birthDate = new Date(dob);
+    const today = new Date();
+    const age =
+      today.getFullYear() -
+      birthDate.getFullYear() -
+      (today <
+      new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate())
+        ? 1
+        : 0);
+
+    if (age < 18) {
+      setDobError("You must be at least 18 years old to register as a driver.");
+      hasError = true;
+    } else {
+      setDobError("");
+    }
+
     if (!emailRegex.test(email)) {
       setEmailError("Invalid email format.");
       hasError = true;
@@ -97,7 +114,7 @@ const DriverForm = () => {
         email,
         password
       );
-      
+
       const user = userCredential.user;
       const userId = user.uid;
 
@@ -418,9 +435,15 @@ const DriverForm = () => {
             type="date"
             value={dob}
             onChange={(e) => setDob(e.target.value)}
+            max={
+              new Date(new Date().setFullYear(new Date().getFullYear() - 18))
+                .toISOString()
+                .split("T")[0]
+            } // ensures at least 18
             className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {dobError && <p className="text-sm text-red-500 mt-1">{dobError}</p>}
         </div>
 
         <div>

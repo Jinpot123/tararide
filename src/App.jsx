@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Navbar from "./Navbar";
 import Hero from "./Hero";
 import Services from "./Services";
@@ -16,11 +21,12 @@ import Login from "./Login";
 import DriverDashboard from "./DriverDashboard";
 import PrivateRoute from "./PrivateRoute";
 import Account from "./Account";
-import AboutUs from "./AboutUs";        // ✅ Make sure these are correctly imported
+import AboutUs from "./AboutUs";
 import Contact from "./Contact";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "./index.css";
+import UserGuide from "./UserGuide";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -62,10 +68,24 @@ const App = () => {
                   <Navigate to="/driver-dashboard" replace />
                 ) : (
                   <>
-                    <div data-aos="fade-up"><Hero /></div>
-                    <div data-aos="fade-up" data-aos-delay="100"><Services /></div>
-                    <div data-aos="fade-up" data-aos-delay="200"><News /></div>
-                    <div data-aos="fade-up" data-aos-delay="300"><ReviewCarousel /></div>
+                    <div data-aos="fade-up">
+                      <Hero />
+                    </div>
+                    <div data-aos="fade-up" data-aos-delay="100">
+                      <Services />
+                    </div>
+
+                    {/* ✅ UserGuide below Services */}
+                    <div data-aos="fade-up" data-aos-delay="150">
+                      <UserGuide />
+                    </div>
+
+                    <div data-aos="fade-up" data-aos-delay="200">
+                      <News />
+                    </div>
+                    <div data-aos="fade-up" data-aos-delay="300">
+                      <ReviewCarousel />
+                    </div>
                   </>
                 )
               }
@@ -82,18 +102,25 @@ const App = () => {
             <Route path="/become-a-driver" element={<DriverForm />} />
             <Route path="/success" element={<Success />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/user-guide" element={<UserGuide />} />
 
             {/* Protected Routes */}
-            <Route path="/driver-dashboard" element={
-              <PrivateRoute allowedRoles={["driver"]}>
-                <DriverDashboard />
-              </PrivateRoute>
-            } />
-            <Route path="/account" element={
-              <PrivateRoute allowedRoles={["driver"]}>
-                <Account />
-              </PrivateRoute>
-            } />
+            <Route
+              path="/driver-dashboard"
+              element={
+                <PrivateRoute allowedRoles={["driver"]}>
+                  <DriverDashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/account"
+              element={
+                <PrivateRoute allowedRoles={["driver"]}>
+                  <Account />
+                </PrivateRoute>
+              }
+            />
           </Routes>
 
           <div data-aos="fade-up" data-aos-delay="400">
