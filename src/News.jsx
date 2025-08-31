@@ -40,7 +40,7 @@ const News = () => {
                 day: "numeric",
               })
             : "No Date",
-          category: "Traffic News",
+          category: "Other News",
           description:
             item.description && item.description.length > 150
               ? item.description.slice(0, 150) + "..."
