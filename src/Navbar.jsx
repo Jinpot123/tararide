@@ -77,6 +77,10 @@ const Navbar = () => {
       <Link to="/contact" className="hover:text-blue-300 transition" onClick={closeMenu}>
         Contact
       </Link>
+      {/* ✅ Corrected link path */}
+      <Link to="/faq" className="hover:text-blue-300 transition" onClick={closeMenu}>
+        FAQ
+      </Link>
       <Link to="/login" className="hover:text-blue-300 transition" onClick={closeMenu}>
         Login
       </Link>

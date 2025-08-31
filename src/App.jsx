@@ -27,6 +27,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "./index.css";
 import UserGuide from "./UserGuide";
+import FAQPage from "./FaqPage"; 
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -74,12 +75,9 @@ const App = () => {
                     <div data-aos="fade-up" data-aos-delay="100">
                       <Services />
                     </div>
-
-                    {/* ✅ UserGuide below Services */}
                     <div data-aos="fade-up" data-aos-delay="150">
                       <UserGuide />
                     </div>
-
                     <div data-aos="fade-up" data-aos-delay="200">
                       <News />
                     </div>
@@ -96,6 +94,7 @@ const App = () => {
               <>
                 <Route path="/about-us" element={<AboutUs />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/faq" element={<FAQPage />} /> 
               </>
             )}
 
